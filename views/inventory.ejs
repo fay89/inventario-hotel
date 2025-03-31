@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inventario</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1d72b8" />
+</head>
+<body>
+  <h1>📦 Inventario del Hotel</h1>
+
+  <% if (user) { %>
+    <p>Bienvenido, <strong><%= user.name %></strong> (<%= user.role %>) | <a href="/logout">Cerrar sesión</a></p>
+    <p>
+      <a href="/">← Volver al panel principal</a>
+      <% if (user.role === "admin") { %> | <a href="/dashboard">📊 Ir al Dashboard</a> <% } %>
+    </p>
+
+    <form method="GET" action="/inventory">
+      <input type="text" name="search" placeholder="Buscar producto..." value="<%= filters.search %>" />
+      <select name="location">
+        <option value="">-- Todas las ubicaciones --</option>
+        <% locations.forEach(loc => { %>
+          <option value="<%= loc.location %>" <%= filters.location === loc.location ? 'selected' : '' %>><%= loc.location %></option>
+        <% }) %>
+      </select>
+      <button type="submit">Filtrar</button>
+      <a href="/inventory"><button type="button">Limpiar</button></a>
+    </form>
+
+    <% if (user.role === "admin") { %>
+      <h3>Agregar nuevo producto</h3>
+      <form action="/inventory/add" method="POST">
+        <input type="text" name="name" placeholder="Nombre del producto" required />
+        <input type="number" name="quantity" placeholder="Cantidad inicial" required />
+        <input type="text" name="location" placeholder="Ubicación" />
+        <input type="number" name="min_stock" placeholder="Stock mínimo" min="0" required />
+        <button type="submit">Agregar</button>
+      </form>
+    <% } %>
+
+    <h3>Productos en inventario</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Detalles</th>
+          <th>Actualizar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(item => { %>
+          <tr>
+            <td data-label="Producto" style="font-weight: 600;">
+              <%= item.name %>
+            </td>
+            <td data-label="Detalles">
+              <div>
+                <strong>Cantidad:</strong>
+                <span style="<%= item.quantity < item.min_stock ? 'color: red; font-weight: bold;' : '' %>">
+                  <%= item.quantity %>
+                  <% if (item.quantity < item.min_stock) { %> ⚠️ <% } %>
+                </span>
+              </div>
+              <div><strong>Ubicación:</strong> <%= item.location %></div>
+              <div><strong>Última edición:</strong> <%= item.last_updated_by %> (<%= item.last_updated_at %>)</div>
+            </td>
+            <td data-label="Actualizar">
+              <form action="/inventory/update/<%= item.id %>" method="POST">
+                <input type="number" name="change" placeholder="+/- unidades" required />
+                <button type="submit">Actualizar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <p><a href="/login">Iniciar sesión</a> para ver el inventario.</p>
+  <% } %>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .then(() => console.log("✅ Service Worker registrado"))
+        .catch(err => console.error("❌ Error al registrar SW:", err));
+    }
+  </script>
+</body>
+</html>

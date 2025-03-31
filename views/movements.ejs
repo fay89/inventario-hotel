@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial de movimientos</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1d72b8" />
+</head>
+<body>
+  <h1>📜 Historial de Movimientos</h1>
+
+  <% if (user) { %>
+    <p>Usuario: <strong><%= user.name %></strong> (<%= user.role %>) | <a href="/logout">Cerrar sesión</a></p>
+    <p><a href="/">← Volver al Panel Principal</a></p>
+
+    <% if (movements.length === 0) { %>
+      <p style="text-align: center;">Todavía no hay movimientos registrados.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cambio</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% movements.forEach(m => { %>
+            <tr>
+              <td data-label="Producto"><%= m.item_name %></td>
+              <td data-label="Cambio"><%= m.change %></td>
+              <td data-label="Usuario"><%= m.user %></td>
+              <td data-label="Fecha"><%= m.date %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  <% } else { %>
+    <p><a href="/login">Iniciar sesión</a> para ver el historial.</p>
+  <% } %>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+</body>
+</html>

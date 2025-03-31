@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1d72b8" />
+</head>
+<body>
+  <h1><%= title %></h1>
+
+  <% if (user) { %>
+    <p>Hola, <strong><%= user.name %></strong> (<%= user.role %>) | <a href="/logout">Cerrar sesión</a></p>
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="/inventory"><button>📦 Inventario</button></a>
+      <a href="/movements"><button>📜 Historial</button></a>
+      <% if (user.role === 'admin') { %>
+        <a href="/dashboard"><button>📊 Dashboard</button></a>
+      <% } %>
+    </div>
+  <% } else { %>
+    <p><a href="/login">Iniciar sesión</a> | <a href="/register">Registrarse</a></p>
+  <% } %>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js");
+    }
+  </script>
+</body>
+</html>

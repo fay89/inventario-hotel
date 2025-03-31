@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1d72b8" />
+</head>
+<body>
+  <h1>📊 Dashboard del Inventario</h1>
+
+  <% if (user) { %>
+    <p>Bienvenido, <strong><%= user.name %></strong> | <a href="/logout">Cerrar sesión</a></p>
+    <p><a href="/inventory">← Volver al Inventario</a></p>
+
+    <div style="text-align: center;">
+      <h3>📦 Resumen general</h3>
+      <ul>
+        <li><strong>Total de productos:</strong> <%= stats.totalProductos %></li>
+        <li><strongTotal unidades en stock:</strong> <%= stats.totalUnidades %></li>
+      </ul>
+
+      <h3>⚠️ Productos con stock bajo</h3>
+      <% if (stats.productosBajoStock.length === 0) { %>
+        <p>No hay productos con stock bajo. 🎉</p>
+      <% } else { %>
+        <ul>
+          <% stats.productosBajoStock.forEach(p => { %>
+            <li><%= p.name %> — <%= p.quantity %> unidades</li>
+          <% }) %>
+        </ul>
+      <% } %>
+
+      <h3>🔥 Productos más usados</h3>
+      <% if (stats.productosMasUsados.length === 0) { %>
+        <p>Aún no hay movimientos registrados.</p>
+      <% } else { %>
+        <ol>
+          <% stats.productosMasUsados.forEach(p => { %>
+            <li><%= p.name %> — <%= p.movimientos %> movimientos</li>
+          <% }) %>
+        </ol>
+      <% } %>
+    </div>
+
+  <% } else { %>
+    <p><a href="/login">Iniciar sesión</a> para ver el dashboard.</p>
+  <% } %>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+</body>
+</html>
